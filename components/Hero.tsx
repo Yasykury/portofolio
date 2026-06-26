@@ -16,52 +16,31 @@ export function Hero() {
       id="top"
       className="relative flex min-h-[100svh] flex-col overflow-hidden"
     >
-      {/* ambient grade glows */}
+      {/* Animated avatar — right side on all screens. Black-bg video blends
+          into the dark hero; masked to fade out on the left so the copy reads. */}
       <div
-        className="glow"
+        className="absolute inset-y-0 right-0 z-0 w-[86%] overflow-hidden sm:w-[64%] lg:w-[44%]"
         style={{
-          width: "40rem",
-          height: "40rem",
-          top: "-12rem",
-          left: "-8rem",
-          background: "radial-gradient(circle, rgba(63,224,197,0.16), transparent 70%)",
+          maskImage: "linear-gradient(to right, transparent, #000 38%)",
+          WebkitMaskImage: "linear-gradient(to right, transparent, #000 38%)",
         }}
-      />
-      <div
-        className="glow"
-        style={{
-          width: "38rem",
-          height: "38rem",
-          bottom: "-14rem",
-          right: "-10rem",
-          background: "radial-gradient(circle, rgba(255,107,53,0.16), transparent 70%)",
-        }}
-      />
-
-      {/* Animated transparent avatar — fills the right side, behind the copy */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-[56%] overflow-hidden lg:block">
-        <div
-          className="glow"
-          style={{
-            width: "26rem",
-            height: "26rem",
-            right: "1rem",
-            top: "18%",
-            background: "radial-gradient(circle, rgba(255,107,53,0.18), transparent 70%)",
-          }}
-        />
+      >
         <video
-          className="animate-float-soft h-full w-full object-cover object-[62%_top]"
+          className="h-full w-full object-cover object-[center_top]"
           autoPlay
           loop
           muted
           playsInline
           preload="auto"
-          poster="/avatar-poster.png"
+          poster="/avatar_01-poster.jpg"
         >
-          <source src="/avatar.webm" type="video/webm" />
+          <source src="/avatar_01.webm" type="video/webm" />
+          <source src="/avatar_01.mp4" type="video/mp4" />
         </video>
       </div>
+      {/* Legibility scrims — keep the copy readable over the avatar */}
+      <div className="pointer-events-none absolute inset-0 z-[5] bg-gradient-to-r from-bg from-30% to-transparent" />
+      <div className="pointer-events-none absolute inset-0 z-[5] bg-gradient-to-t from-bg via-transparent to-transparent" />
 
       {/* Top bar */}
       <header className="shell container-px relative z-30 flex items-center justify-between pt-6">
