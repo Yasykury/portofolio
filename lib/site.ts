@@ -20,10 +20,10 @@ export const site = {
 } as const;
 
 export const nav = [
-  { label: "Work", href: "#work" },
-  { label: "Services", href: "#services" },
   { label: "About", href: "#about" },
-  { label: "Process", href: "#process" },
+  { label: "Services", href: "#services" },
+  { label: "Projects", href: "#projects" },
+  { label: "Contact", href: "#contact" },
 ] as const;
 
 // All figures are grounded in the CV (years since 2019, 5 employers/clients,

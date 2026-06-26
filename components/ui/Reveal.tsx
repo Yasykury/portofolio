@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { useRef } from "react";
+import { motion, useInView, useReducedMotion, type Variants } from "framer-motion";
 import type { ReactNode } from "react";
 
 type RevealProps = {
@@ -25,6 +26,9 @@ export function Reveal({
   as = "div",
 }: RevealProps) {
   const reduce = useReducedMotion();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ref = useRef<any>(null);
+  const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
   const MotionTag = motion[as];
 
   const variants: Variants = {
@@ -42,11 +46,11 @@ export function Reveal({
 
   return (
     <MotionTag
+      ref={ref}
       className={className}
       variants={variants}
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-80px" }}
+      animate={inView ? "visible" : "hidden"}
     >
       {children}
     </MotionTag>
