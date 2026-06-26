@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { site, skills } from "@/lib/site";
 import { Reveal } from "@/components/ui/Reveal";
-import { AnimatedText } from "@/components/ui/AnimatedText";
 import { ContactButton } from "@/components/ui/buttons";
 
 const ABOUT_TEXT =
@@ -51,12 +50,11 @@ export function About() {
             </h2>
           </Reveal>
 
-          <div className="mt-6 max-w-xl">
-            <AnimatedText
-              text={ABOUT_TEXT}
-              className="text-lg leading-relaxed text-ink-soft sm:text-xl"
-            />
-          </div>
+          <Reveal delay={0.08}>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft sm:text-xl">
+              {ABOUT_TEXT}
+            </p>
+          </Reveal>
 
           <Reveal delay={0.1}>
             <ul className="mt-8 flex flex-wrap gap-2">
