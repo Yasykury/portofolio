@@ -10,10 +10,6 @@ const navLinks = [
   { label: "Contact", href: "#contact" },
 ];
 
-// Hero media — swap to "/avatar.gif" (animated GIF) or use the <video> below
-// once a transparent reel/clip is added to /public.
-const HERO_MEDIA = "/avatar.png";
-
 export function Hero() {
   return (
     <section
@@ -42,24 +38,29 @@ export function Hero() {
         }}
       />
 
-      {/* Hero media (avatar) — desktop only, behind the type */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-[52%] lg:block">
+      {/* Animated transparent avatar — fills the right side, behind the copy */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-[56%] overflow-hidden lg:block">
         <div
           className="glow"
           style={{
-            width: "30rem",
-            height: "30rem",
-            right: "4rem",
-            top: "26%",
-            background: "radial-gradient(circle, rgba(255,107,53,0.20), transparent 70%)",
+            width: "26rem",
+            height: "26rem",
+            right: "1rem",
+            top: "18%",
+            background: "radial-gradient(circle, rgba(255,107,53,0.18), transparent 70%)",
           }}
         />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={HERO_MEDIA}
-          alt={`${site.name} — ${site.role}`}
-          className="mask-feather animate-float-soft absolute bottom-0 right-0 h-[78%] w-auto max-w-none object-contain"
-        />
+        <video
+          className="animate-float-soft h-full w-full object-cover object-[62%_top]"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          poster="/avatar-poster.png"
+        >
+          <source src="/avatar.webm" type="video/webm" />
+        </video>
       </div>
 
       {/* Top bar */}
