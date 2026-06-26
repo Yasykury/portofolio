@@ -19,14 +19,10 @@ export function Hero() {
       {/* Animated avatar — right side on all screens. Black-bg video blends
           into the dark hero; masked to fade out on the left so the copy reads. */}
       <div
-        className="absolute inset-y-0 right-0 z-0 w-[86%] overflow-hidden sm:w-[64%] lg:w-[44%]"
-        style={{
-          maskImage: "linear-gradient(to right, transparent, #000 38%)",
-          WebkitMaskImage: "linear-gradient(to right, transparent, #000 38%)",
-        }}
+        className="absolute inset-y-0 right-0 z-0 w-[86%] overflow-hidden sm:w-[64%] lg:w-[44%] [mask-image:linear-gradient(to_right,transparent,#000_16%)] [-webkit-mask-image:linear-gradient(to_right,transparent,#000_16%)] lg:[mask-image:linear-gradient(to_right,transparent,#000_38%)] lg:[-webkit-mask-image:linear-gradient(to_right,transparent,#000_38%)]"
       >
         <video
-          className="h-full w-full object-cover object-[center_top]"
+          className="h-full w-full object-cover object-[28%_top] lg:object-[center_top]"
           autoPlay
           loop
           muted
