@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.2.8",
+    "@fontsource-variable/bricolage-grotesque": "^5.2.10",
+    "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "@fontsource-variable/space-grotesk": "^5.2.10",
     "@fontsource/anton": "^5.2.7",
     "@fontsource/kanit": "^5.2.8",

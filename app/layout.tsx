@@ -1,13 +1,9 @@
 import type { Metadata, Viewport } from "next";
 // Self-hosted variable fonts (no external/runtime Google Fonts request —
 // faster first paint and reproducible, offline-capable builds).
-import "@fontsource/kanit/300.css";
-import "@fontsource/kanit/400.css";
-import "@fontsource/kanit/500.css";
-import "@fontsource/kanit/600.css";
-import "@fontsource/kanit/700.css";
-import "@fontsource/kanit/800.css";
-import "@fontsource/kanit/900.css";
+import "@fontsource-variable/bricolage-grotesque";
+import "@fontsource-variable/space-grotesk";
+import "@fontsource-variable/jetbrains-mono";
 import "./globals.css";
 
 // Set NEXT_PUBLIC_SITE_URL to your real domain in Vercel once you have it.
@@ -64,7 +60,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen antialiased">
+      <body className="grain min-h-screen antialiased">
         <a
           href="#about"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:text-black"

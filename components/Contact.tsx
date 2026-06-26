@@ -145,7 +145,7 @@ export function Contact() {
                       {budgets.map((b, i) => (
                         <label
                           key={b}
-                          className="cursor-pointer rounded-full border border-white/15 px-4 py-2 text-sm text-white/70 transition-colors duration-200 hover:border-white/40 has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-white"
+                          className="cursor-pointer rounded-full border border-white/15 px-4 py-2 text-sm text-white/70 transition-colors duration-200 hover:border-white/40 has-[:checked]:border-warm has-[:checked]:bg-warm has-[:checked]:text-bg"
                         >
                           <input
                             type="radio"
@@ -173,7 +173,7 @@ export function Contact() {
                       rows={4}
                       required
                       placeholder="A few sentences about what you're building, timeline, and what success looks like."
-                      className="w-full resize-none rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-ink placeholder:text-white/35 transition-colors duration-200 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
+                      className="w-full resize-none rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-ink placeholder:text-white/35 transition-colors duration-200 focus:border-warm focus:outline-none focus:ring-2 focus:ring-warm/40"
                     />
                   </div>
 
@@ -189,7 +189,7 @@ export function Contact() {
                   <button
                     type="submit"
                     disabled={status === "loading"}
-                    className="btn-glow group inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full px-6 py-4 font-semibold uppercase tracking-wide disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                    className="btn-grade group inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full px-6 py-4 font-semibold uppercase tracking-wide disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                   >
                     {status === "loading" ? (
                       <>
@@ -241,7 +241,7 @@ function Field({
         type={type}
         required={required}
         placeholder={placeholder}
-        className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-ink placeholder:text-white/35 transition-colors duration-200 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
+        className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-ink placeholder:text-white/35 transition-colors duration-200 focus:border-warm focus:outline-none focus:ring-2 focus:ring-warm/40"
       />
     </div>
   );

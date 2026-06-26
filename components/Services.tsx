@@ -1,65 +1,51 @@
-import { FadeIn } from "@/components/ui/FadeIn";
-
-const services = [
-  {
-    num: "01",
-    name: "Video Editing & Post-Production",
-    desc: "From raw footage to a finished story — event coverage, YouTube content, and promo videos with professional pacing, color, and sound.",
-  },
-  {
-    num: "02",
-    name: "Motion Graphics",
-    desc: "Dynamic animations and motion design that add energy and storytelling to brands, products, and digital experiences.",
-  },
-  {
-    num: "03",
-    name: "Visual Effects (VFX)",
-    desc: "Eye-catching effects and compositing built in After Effects to bring concepts and brands to life on screen.",
-  },
-  {
-    num: "04",
-    name: "Graphic Design & Branding",
-    desc: "Cohesive visual identities — from logos to full brand systems — that communicate a clear and memorable presence.",
-  },
-  {
-    num: "05",
-    name: "Content & Creative Direction",
-    desc: "End-to-end creative ownership: concept, production, and delivery for campaigns and communities, including studio setups.",
-  },
-];
+import { services } from "@/lib/site";
+import { Reveal } from "@/components/ui/Reveal";
+import { serviceIcons } from "@/components/ui/icons";
 
 export function Services() {
   return (
     <section
       id="services"
-      className="rounded-t-[40px] bg-white px-5 py-20 text-[#0C0C0C] sm:rounded-t-[50px] sm:px-8 sm:py-24 md:rounded-t-[60px] md:px-10 md:py-32"
+      className="scroll-mt-24 border-t border-line py-24 md:py-32"
     >
-      <FadeIn
-        as="h2"
-        y={40}
-        className="mb-16 text-center text-[clamp(3rem,12vw,160px)] font-black uppercase leading-none sm:mb-20 md:mb-28"
-      >
-        Services
-      </FadeIn>
+      <div className="shell container-px">
+        <Reveal>
+          <p className="mono-label">Craft // 00:58</p>
+          <h2 className="mt-4 font-display text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+            What I do
+          </h2>
+        </Reveal>
 
-      <div className="mx-auto max-w-5xl">
-        {services.map((s, i) => (
-          <FadeIn key={s.num} delay={i * 0.1} y={30}>
-            <div className="flex items-start gap-4 border-t border-[rgba(12,12,12,0.15)] py-8 last:border-b sm:gap-8 sm:py-10 md:py-12">
-              <span className="text-[clamp(3rem,10vw,140px)] font-black leading-none text-[#0C0C0C]">
-                {s.num}
-              </span>
-              <div className="pt-1 sm:pt-2">
-                <h3 className="text-[clamp(1rem,2.2vw,2.1rem)] font-medium uppercase leading-tight">
-                  {s.name}
-                </h3>
-                <p className="mt-3 max-w-2xl text-[clamp(0.85rem,1.6vw,1.25rem)] font-light leading-relaxed opacity-60">
-                  {s.desc}
-                </p>
-              </div>
-            </div>
-          </FadeIn>
-        ))}
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 md:mt-16">
+          {services.map((s, i) => {
+            const Icon = serviceIcons[s.icon];
+            return (
+              <Reveal key={s.title} delay={i * 0.05}>
+                <div className="group h-full rounded-2xl border border-line bg-surface p-7 transition-all duration-300 hover:-translate-y-1 hover:border-warm/60 lg:p-8">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-lg border border-line bg-bg text-warm transition-colors duration-300 group-hover:bg-warm group-hover:text-bg">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <h3 className="mt-5 font-display text-2xl font-bold tracking-tight">
+                    {s.title}
+                  </h3>
+                  <p className="mt-3 leading-relaxed text-ink-soft">
+                    {s.description}
+                  </p>
+                  <ul className="mt-5 flex flex-wrap gap-2">
+                    {s.points.map((pt) => (
+                      <li
+                        key={pt}
+                        className="rounded-full border border-line px-2.5 py-1 font-mono text-[0.65rem] uppercase tracking-wider text-ink-muted"
+                      >
+                        {pt}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

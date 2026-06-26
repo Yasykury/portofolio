@@ -1,20 +1,22 @@
+import { TimelineScrub } from "@/components/TimelineScrub";
 import { Hero } from "@/components/Hero";
-import { Marquee } from "@/components/Marquee";
+import { Reel } from "@/components/Reel";
+import { Work } from "@/components/Work";
 import { About } from "@/components/About";
 import { Services } from "@/components/Services";
-import { Projects } from "@/components/Projects";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 
 export default function Home() {
   return (
     <>
+      <TimelineScrub />
       <main>
         <Hero />
-        <Marquee />
+        <Reel />
+        <Work />
         <About />
         <Services />
-        <Projects />
         <Contact />
       </main>
       <Footer />
