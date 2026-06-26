@@ -19,16 +19,16 @@ export function About() {
             <div className="relative mx-auto max-w-sm">
               <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-line bg-surface-2">
                 <Image
-                  src="/avatar.png"
+                  src="/profile.jpg"
                   alt={`${site.name} — ${site.role}`}
                   fill
                   sizes="(max-width: 1024px) 100vw, 24rem"
-                  className="object-cover object-[center_22%]"
+                  className="object-cover object-[center_18%]"
                 />
               </div>
               <div className="absolute -bottom-4 -right-3 rounded-xl border border-line bg-surface px-4 py-3 shadow-lift">
                 <p className="font-display text-base font-bold">
-                  {site.shortName}
+                  {site.name}
                 </p>
                 <p className="font-mono text-[0.7rem] uppercase tracking-wider text-ink-muted">
                   {site.role}

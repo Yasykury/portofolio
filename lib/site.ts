@@ -46,23 +46,30 @@ export const clients = [
 ] as const;
 
 export type Project = {
+  /** URL slug — also the media folder name: public/work/<slug>/ */
+  slug: string;
   title: string;
   category: string;
   year: string;
   blurb: string;
   tags: string[];
-  /** Tailwind gradient classes used as the cover when no `image` is set. */
+  /** Tailwind gradient classes used as the card cover. */
   cover: string;
-  /**
-   * Optional thumbnail. Drop a file in `public/projects/` and set the path here
-   * (e.g. "/projects/dupoin.jpg"). A 16:10 image / video still works best.
-   * When set, it replaces the gradient + mock-UI placeholder cover.
-   */
-  image?: string;
 };
 
 export const projects: Project[] = [
   {
+    slug: "polestar",
+    title: "PT Dupoin Futures Indonesia (Polestar Indonesia)",
+    category: "Multimedia · Branding",
+    year: "2026",
+    blurb:
+      "Producing video and graphic assets for company branding and community marketing — plus contributing to the Polestar community website and podcast studio setup.",
+    tags: ["Video", "Motion Graphics", "Web"],
+    cover: "from-sky-500 via-blue-500 to-indigo-600",
+  },
+  {
+    slug: "grw",
     title: "PT Dupoin Futures Indonesia (GRW)",
     category: "Multimedia · Branding",
     year: "2025",
@@ -72,6 +79,7 @@ export const projects: Project[] = [
     cover: "from-blue-500 via-indigo-500 to-violet-600",
   },
   {
+    slug: "circle-media",
     title: "Circle Media Entertainment",
     category: "Event · Post-Production",
     year: "2024",
@@ -81,6 +89,7 @@ export const projects: Project[] = [
     cover: "from-emerald-400 via-teal-500 to-cyan-600",
   },
   {
+    slug: "washsins",
     title: "Washsins Shoes Care",
     category: "Brand · Marketing",
     year: "2023",
@@ -90,6 +99,7 @@ export const projects: Project[] = [
     cover: "from-rose-400 via-pink-500 to-fuchsia-600",
   },
   {
+    slug: "crownsy",
     title: "Crownsy Screen Printing",
     category: "Brand · Apparel",
     year: "2020",
@@ -99,6 +109,7 @@ export const projects: Project[] = [
     cover: "from-amber-400 via-orange-500 to-red-500",
   },
   {
+    slug: "natasha-wilona",
     title: "Natasha Wilona YouTube",
     category: "YouTube · Video",
     year: "2019",

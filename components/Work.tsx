@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { projects } from "@/lib/site";
 import { Reveal } from "@/components/ui/Reveal";
@@ -32,8 +33,8 @@ export function Work() {
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
             >
-              <a
-                href="#contact"
+              <Link
+                href={`/work/${p.slug}`}
                 className="flex flex-col gap-4 py-6 md:flex-row md:items-center md:justify-between md:py-8"
               >
                 <div className="flex items-baseline gap-4 md:gap-7">
@@ -50,7 +51,7 @@ export function Work() {
                   </span>
                   <ArrowUpRight className="h-6 w-6 text-ink-muted transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-warm" />
                 </div>
-              </a>
+              </Link>
 
               {/* Mobile inline preview */}
               <div
