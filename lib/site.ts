@@ -15,8 +15,7 @@ export const site = {
   location: "Pondok Aren, Tangerang Selatan, Indonesia",
   availability: "Open to video, motion & design projects",
   socials: [
-    // If your LinkedIn vanity URL differs, just change the slug below.
-    { label: "LinkedIn", href: "https://www.linkedin.com/in/yasykury-sulistyo" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/yasykury-sulistyo-2a09882ba/" },
   ],
 } as const;
 
