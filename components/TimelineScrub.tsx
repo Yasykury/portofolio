@@ -85,11 +85,6 @@ export function TimelineScrub() {
           REC
         </div>
         <div className="relative ml-[5px] flex flex-col gap-7 border-l border-line pl-5">
-          {/* playhead */}
-          <div
-            className="pointer-events-none absolute -left-[5px] h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-warm shadow-[0_0_12px_rgba(255,107,53,0.8)] transition-[top] duration-150"
-            style={{ top: `${progress * 100}%` }}
-          />
           {MARKERS.map((m, i) => (
             <button
               key={m.id}
@@ -98,9 +93,9 @@ export function TimelineScrub() {
               className="group flex cursor-pointer items-center gap-3 text-left"
             >
               <span
-                className={`block h-2 w-2 rotate-45 border transition-colors duration-200 ${
+                className={`block h-2 w-2 rotate-45 border transition-all duration-200 ${
                   active === i
-                    ? "border-warm bg-warm"
+                    ? "scale-125 border-warm bg-warm shadow-[0_0_10px_rgba(255,107,53,0.75)]"
                     : "border-line-strong bg-transparent group-hover:border-ink-soft"
                 }`}
                 style={{ marginLeft: "-25px" }}
