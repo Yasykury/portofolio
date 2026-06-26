@@ -10,6 +10,10 @@ const navLinks = [
   { label: "Contact", href: "#contact" },
 ];
 
+// Hero media — swap to "/avatar.gif" (animated GIF) or use the <video> below
+// once a transparent reel/clip is added to /public.
+const HERO_MEDIA = "/avatar.png";
+
 export function Hero() {
   return (
     <section
@@ -37,6 +41,26 @@ export function Hero() {
           background: "radial-gradient(circle, rgba(255,107,53,0.16), transparent 70%)",
         }}
       />
+
+      {/* Hero media (avatar) — desktop only, behind the type */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-[52%] lg:block">
+        <div
+          className="glow"
+          style={{
+            width: "30rem",
+            height: "30rem",
+            right: "4rem",
+            top: "26%",
+            background: "radial-gradient(circle, rgba(255,107,53,0.20), transparent 70%)",
+          }}
+        />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={HERO_MEDIA}
+          alt={`${site.name} — ${site.role}`}
+          className="mask-feather animate-float-soft absolute bottom-0 right-0 h-[78%] w-auto max-w-none object-contain"
+        />
+      </div>
 
       {/* Top bar */}
       <header className="shell container-px relative z-30 flex items-center justify-between pt-6">
@@ -68,7 +92,7 @@ export function Hero() {
       </header>
 
       {/* Hero copy */}
-      <div className="shell container-px relative z-20 flex flex-1 flex-col justify-center py-16">
+      <div className="shell container-px relative z-20 flex flex-1 flex-col justify-center py-16 lg:pr-[42%]">
         <FadeIn as="div" playOnMount delay={0.05} y={16}>
           <p className="mono-label flex items-center gap-2.5">
             <span className="h-1.5 w-1.5 rounded-full bg-warm animate-blink" />
@@ -76,7 +100,7 @@ export function Hero() {
           </p>
         </FadeIn>
 
-        <h1 className="mt-6 font-display text-[15vw] font-extrabold leading-[0.92] tracking-tight sm:text-[12vw] md:text-[10.5vw] lg:text-[9.5rem]">
+        <h1 className="mt-6 font-display text-[14vw] font-extrabold leading-[0.95] tracking-tight sm:text-[12vw] md:text-[9vw] lg:text-[6.5rem] xl:text-[7.5rem]">
           <FadeIn as="div" playOnMount delay={0.12} y={40}>
             <span className="block">I make</span>
           </FadeIn>
@@ -84,7 +108,7 @@ export function Hero() {
             <span className="block">
               brands{" "}
               <RotatingWord
-                words={["move", "flow", "pop", "convert", "stick"]}
+                words={["move", "flow", "pop", "sell", "grow"]}
                 className="text-grade"
               />
             </span>
