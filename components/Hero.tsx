@@ -62,7 +62,7 @@ export function Hero() {
           {skills.slice(0, 5).map((skill) => (
             <Reveal
               key={skill}
-              as="li"
+              as="span"
               className="rounded-full border border-line bg-surface/50 px-3.5 py-1.5 text-xs font-medium text-ink-soft backdrop-blur"
             >
               {skill}

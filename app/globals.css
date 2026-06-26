@@ -202,8 +202,8 @@
 
 /* Feather the edges of an image into the background */
 .mask-feather {
-  -webkit-mask-image: radial-gradient(ellipse 70% 80% at 50% 43%, #000 48%, transparent 88%);
-  mask-image: radial-gradient(ellipse 70% 80% at 50% 43%, #000 48%, transparent 88%);
+  -webkit-mask-image: radial-gradient(ellipse 66% 80% at 50% 42%, #000 44%, transparent 84%);
+  mask-image: radial-gradient(ellipse 66% 80% at 50% 42%, #000 44%, transparent 84%);
 }
 
 /* ------------------------------------------------------------------ *
