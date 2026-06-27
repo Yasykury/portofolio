@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { projects, site } from "@/lib/site";
 import { Footer } from "@/components/Footer";
+import { WorkGallery } from "@/components/WorkGallery";
 import { ContactButton } from "@/components/ui/buttons";
 import { ArrowRight } from "@/components/ui/icons";
 
@@ -103,32 +104,7 @@ export default async function WorkDetail({
         {/* Gallery */}
         <section className="mt-12">
           {media.length > 0 ? (
-            <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4">
-              {media.map((m, i) => (
-                <div
-                  key={m.src}
-                  className="break-inside-avoid overflow-hidden rounded-xl border border-line bg-surface"
-                >
-                  {m.type === "video" ? (
-                    <video
-                      src={m.src}
-                      className="w-full"
-                      controls
-                      preload="metadata"
-                      playsInline
-                    />
-                  ) : (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={m.src}
-                      alt={`${project.title} — ${i + 1}`}
-                      className="w-full"
-                      loading="lazy"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
+            <WorkGallery media={media} />
           ) : (
             <div className="rounded-2xl border border-dashed border-line-strong bg-surface p-10 text-center sm:p-16">
               <p className="font-display text-2xl font-bold">
