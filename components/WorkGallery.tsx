@@ -6,6 +6,11 @@ export type MediaItem = { src: string; type: "image" | "video" };
 
 export function WorkGallery({ media }: { media: MediaItem[] }) {
   const [active, setActive] = useState<number | null>(null);
+  // Aspect ratio (w/h) per item, measured once the media loads. Drives the
+  // justified flex layout so every row fills the full width with no gaps.
+  const [ratios, setRatios] = useState<Record<number, number>>({});
+  const setRatio = (i: number, ar: number) =>
+    setRatios((r) => (r[i] || !isFinite(ar) || ar <= 0 ? r : { ...r, [i]: ar }));
 
   useEffect(() => {
     if (active === null) return;
@@ -28,40 +33,55 @@ export function WorkGallery({ media }: { media: MediaItem[] }) {
 
   return (
     <>
-      <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4">
-        {media.map((m, i) => (
-          <button
-            key={m.src}
-            type="button"
-            onClick={() => setActive(i)}
-            aria-label="Open preview"
-            className="group relative block w-full cursor-pointer overflow-hidden rounded-xl border border-line bg-surface"
-          >
-            {m.type === "video" ? (
-              <AutoVideo src={m.src} />
-            ) : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={m.src}
-                alt=""
-                loading="lazy"
-                className="w-full transition-transform duration-500 group-hover:scale-[1.04]"
-              />
-            )}
-            {/* hover overlay */}
-            <span className="pointer-events-none absolute inset-0 flex items-end justify-between bg-gradient-to-t from-black/55 via-transparent to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-              <span className="inline-flex items-center gap-1.5 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-white">
-                {m.type === "video" ? <PlayIcon /> : <ExpandIcon />}
-                {m.type === "video" ? "Play" : "View"}
+      <div className="flex flex-wrap items-start gap-4">
+        {media.map((m, i) => {
+          const ar = ratios[i] ?? 1.5; // default until measured
+          return (
+            <button
+              key={m.src}
+              type="button"
+              onClick={() => setActive(i)}
+              aria-label="Open preview"
+              style={{ flexGrow: ar, flexBasis: `${ar * 14}rem` }}
+              className="group relative block cursor-pointer overflow-hidden rounded-xl border border-line bg-surface max-sm:!grow-0 max-sm:!basis-full"
+            >
+              {m.type === "video" ? (
+                <AutoVideo src={m.src} onReady={(r) => setRatio(i, r)} />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={m.src}
+                  alt=""
+                  loading="lazy"
+                  ref={(el) => {
+                    if (el && el.complete && el.naturalWidth)
+                      setRatio(i, el.naturalWidth / el.naturalHeight);
+                  }}
+                  onLoad={(e) =>
+                    setRatio(
+                      i,
+                      e.currentTarget.naturalWidth /
+                        e.currentTarget.naturalHeight,
+                    )
+                  }
+                  className="block h-auto w-full transition-transform duration-500 group-hover:scale-[1.04]"
+                />
+              )}
+              {/* hover overlay */}
+              <span className="pointer-events-none absolute inset-0 flex items-end justify-between bg-gradient-to-t from-black/55 via-transparent to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                <span className="inline-flex items-center gap-1.5 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-white">
+                  {m.type === "video" ? <PlayIcon /> : <ExpandIcon />}
+                  {m.type === "video" ? "Play" : "View"}
+                </span>
               </span>
-            </span>
-            {m.type === "video" && (
-              <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-black/55 px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-white backdrop-blur">
-                Video
-              </span>
-            )}
-          </button>
-        ))}
+              {m.type === "video" && (
+                <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-black/55 px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-white backdrop-blur">
+                  Video
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {active !== null && (
@@ -138,11 +158,18 @@ export function WorkGallery({ media }: { media: MediaItem[] }) {
   );
 }
 
-function AutoVideo({ src }: { src: string }) {
+function AutoVideo({
+  src,
+  onReady,
+}: {
+  src: string;
+  onReady: (ratio: number) => void;
+}) {
   const ref = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
+    if (v.videoWidth) onReady(v.videoWidth / v.videoHeight);
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) v.play().catch(() => {});
@@ -161,7 +188,10 @@ function AutoVideo({ src }: { src: string }) {
       loop
       playsInline
       preload="metadata"
-      className="w-full transition-transform duration-500 group-hover:scale-[1.04]"
+      onLoadedMetadata={(e) =>
+        onReady(e.currentTarget.videoWidth / e.currentTarget.videoHeight)
+      }
+      className="block h-auto w-full transition-transform duration-500 group-hover:scale-[1.04]"
     />
   );
 }
