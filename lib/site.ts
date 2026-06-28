@@ -99,6 +99,16 @@ export const projects: Project[] = [
     cover: "from-rose-400 via-pink-500 to-fuchsia-600",
   },
   {
+    slug: "digigrafi",
+    title: "Digigrafi Art",
+    category: "Freelance · Videography",
+    year: "2022",
+    blurb:
+      "Freelance videographer and video editor — covering shoots, cutting polished edits, and crafting custom bumper animations for brand identity and promotional content.",
+    tags: ["Videography", "Video Editing", "Bumper & Motion"],
+    cover: "from-violet-500 via-purple-500 to-fuchsia-600",
+  },
+  {
     slug: "crownsy",
     title: "Crownsy Screen Printing",
     category: "Brand · Apparel",
