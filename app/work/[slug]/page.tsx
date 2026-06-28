@@ -1,4 +1,4 @@
-import { promises as fs } from "node:fs";
+import { promises as fs, existsSync } from "node:fs";
 import path from "node:path";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -24,7 +24,7 @@ export async function generateMetadata({
   return { title: project.title, description: project.blurb };
 }
 
-type MediaItem = { src: string; type: "image" | "video" };
+type MediaItem = { src: string; type: "image" | "video"; poster?: string };
 
 // Auto-collect everything dropped into public/work/<slug>/ at build time —
 // no code edit needed to add work samples.
@@ -35,10 +35,19 @@ async function getMedia(slug: string): Promise<MediaItem[]> {
     return files
       .filter((f) => /\.(jpe?g|png|webp|gif|mp4|webm)$/i.test(f))
       .sort()
-      .map((f) => ({
-        src: `/work/${slug}/${f}`,
-        type: /\.(mp4|webm)$/i.test(f) ? "video" : "image",
-      }));
+      .map((f) => {
+        const isVideo = /\.(mp4|webm)$/i.test(f);
+        const item: MediaItem = {
+          src: `/work/${slug}/${f}`,
+          type: isVideo ? "video" : "image",
+        };
+        if (isVideo) {
+          const poster = f.replace(/\.(mp4|webm)$/i, ".jpg");
+          if (existsSync(path.join(dir, "posters", poster)))
+            item.poster = `/work/${slug}/posters/${poster}`;
+        }
+        return item;
+      });
   } catch {
     return [];
   }

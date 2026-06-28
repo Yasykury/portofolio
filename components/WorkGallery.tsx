@@ -2,7 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export type MediaItem = { src: string; type: "image" | "video" };
+export type MediaItem = {
+  src: string;
+  type: "image" | "video";
+  poster?: string;
+};
 
 export function WorkGallery({ media }: { media: MediaItem[] }) {
   const [active, setActive] = useState<number | null>(null);
@@ -46,7 +50,11 @@ export function WorkGallery({ media }: { media: MediaItem[] }) {
               className="group relative block cursor-pointer overflow-hidden rounded-xl border border-line bg-surface max-sm:!grow-0 max-sm:!basis-full"
             >
               {m.type === "video" ? (
-                <AutoVideo src={m.src} onReady={(r) => setRatio(i, r)} />
+                <AutoVideo
+                  src={m.src}
+                  poster={m.poster}
+                  onReady={(r) => setRatio(i, r)}
+                />
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -133,6 +141,7 @@ export function WorkGallery({ media }: { media: MediaItem[] }) {
               <video
                 key={media[active].src}
                 src={media[active].src}
+                poster={media[active].poster}
                 className="max-h-[88vh] max-w-[92vw] rounded-xl"
                 controls
                 autoPlay
@@ -160,9 +169,11 @@ export function WorkGallery({ media }: { media: MediaItem[] }) {
 
 function AutoVideo({
   src,
+  poster,
   onReady,
 }: {
   src: string;
+  poster?: string;
   onReady: (ratio: number) => void;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -184,6 +195,7 @@ function AutoVideo({
     <video
       ref={ref}
       src={src}
+      poster={poster}
       muted
       loop
       playsInline

@@ -1,11 +1,22 @@
-// Optimize all project videos in public/work/<slug>/ for the web.
-// Run:  npm run optimize
-// Compresses any video that isn't already web-sized (H.264, longest side
-// 1280px, faststart) and converts .mov/.webm to .mp4. Already-optimized
-// files are skipped, so it's safe to run repeatedly.
+// Optimize all project videos in public/work/<slug>/ for the web AND generate
+// a poster image for each video (used as the hover thumbnail + fast first
+// paint in the gallery).
+//   Run:  npm run optimize
+// - Compresses any video that isn't already web-sized (H.264, longest side
+//   1280px, faststart) and converts .mov/.webm to .mp4.
+// - Writes posters to public/work/<slug>/posters/<name>.jpg.
+// Safe to run repeatedly — already-optimized files and existing posters are
+// skipped.
 
 import { execSync } from "node:child_process";
-import { readdirSync, statSync, renameSync, unlinkSync } from "node:fs";
+import {
+  readdirSync,
+  statSync,
+  renameSync,
+  unlinkSync,
+  existsSync,
+  mkdirSync,
+} from "node:fs";
 import path from "node:path";
 
 const ROOT = path.join(process.cwd(), "public", "work");
@@ -25,7 +36,22 @@ function longestSide(file) {
   }
 }
 
+function makePoster(video, poster) {
+  // grab a frame ~1s in (skips black intros); fall back to the first frame
+  try {
+    execSync(
+      `ffmpeg -y -ss 1 -i "${video}" -frames:v 1 -vf "scale=720:-2" "${poster}"`,
+      { stdio: "ignore" },
+    );
+  } catch {
+    execSync(`ffmpeg -y -i "${video}" -frames:v 1 -vf "scale=720:-2" "${poster}"`, {
+      stdio: "ignore",
+    });
+  }
+}
+
 let optimized = 0;
+let posters = 0;
 let skipped = 0;
 
 let folders = [];
@@ -46,24 +72,35 @@ for (const slug of folders) {
     const sizeMB = statSync(full).size / 1024 / 1024;
     const isMp4 = /\.mp4$/i.test(file);
     const long = longestSide(full);
+    const outMp4 = full.replace(VIDEO, ".mp4");
 
-    // Already small + web-sized + mp4 → leave it alone.
     if (isMp4 && sizeMB < 3 && long > 0 && long <= 1280) {
       skipped++;
-      continue;
+    } else {
+      const tmp = full.replace(VIDEO, ".opt.tmp.mp4");
+      console.log(`Optimizing ${slug}/${file} (${sizeMB.toFixed(1)} MB)…`);
+      execSync(
+        `ffmpeg -y -i "${full}" -vf "scale='if(gt(iw,ih),min(1280,iw),-2)':'if(gt(iw,ih),-2,min(1280,ih))'" -c:v libx264 -pix_fmt yuv420p -crf 26 -preset veryfast -c:a aac -b:a 128k -movflags +faststart "${tmp}"`,
+        { stdio: "ignore" },
+      );
+      if (!isMp4) unlinkSync(full);
+      renameSync(tmp, outMp4);
+      optimized++;
     }
 
-    const outMp4 = full.replace(VIDEO, ".mp4");
-    const tmp = full.replace(VIDEO, ".opt.tmp.mp4");
-    console.log(`Optimizing ${slug}/${file} (${sizeMB.toFixed(1)} MB)…`);
-    execSync(
-      `ffmpeg -y -i "${full}" -vf "scale='if(gt(iw,ih),min(1280,iw),-2)':'if(gt(iw,ih),-2,min(1280,ih))'" -c:v libx264 -pix_fmt yuv420p -crf 26 -preset veryfast -c:a aac -b:a 128k -movflags +faststart "${tmp}"`,
-      { stdio: "ignore" },
-    );
-    if (!isMp4) unlinkSync(full); // drop the original .mov/.webm
-    renameSync(tmp, outMp4);
-    optimized++;
+    // Ensure a poster exists for this video.
+    const base = path.basename(outMp4, ".mp4");
+    const postersDir = path.join(dir, "posters");
+    const poster = path.join(postersDir, `${base}.jpg`);
+    if (!existsSync(poster)) {
+      mkdirSync(postersDir, { recursive: true });
+      console.log(`  poster → posters/${base}.jpg`);
+      makePoster(outMp4, poster);
+      posters++;
+    }
   }
 }
 
-console.log(`\nDone. Optimized ${optimized}, skipped ${skipped} already-optimized.`);
+console.log(
+  `\nDone. Optimized ${optimized} video(s), made ${posters} poster(s), skipped ${skipped} already-optimized.`,
+);

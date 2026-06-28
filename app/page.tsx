@@ -1,4 +1,4 @@
-import { promises as fs } from "node:fs";
+import { promises as fs, existsSync } from "node:fs";
 import path from "node:path";
 import { projects } from "@/lib/site";
 import { TimelineScrub } from "@/components/TimelineScrub";
@@ -16,10 +16,17 @@ async function getThumbs(): Promise<Record<string, string | null>> {
     projects.map(async (p) => {
       try {
         const dir = path.join(process.cwd(), "public", "work", p.slug);
-        const files = (await fs.readdir(dir))
-          .filter((f) => /\.(jpe?g|png|webp|gif)$/i.test(f))
-          .sort();
-        return [p.slug, files[0] ? `/work/${p.slug}/${files[0]}` : null] as const;
+        const files = (await fs.readdir(dir)).sort();
+        // Prefer a real image; otherwise use the first video's poster.
+        const img = files.find((f) => /\.(jpe?g|png|webp|gif)$/i.test(f));
+        if (img) return [p.slug, `/work/${p.slug}/${img}`] as const;
+        const vid = files.find((f) => /\.(mp4|webm)$/i.test(f));
+        if (vid) {
+          const poster = vid.replace(/\.(mp4|webm)$/i, ".jpg");
+          if (existsSync(path.join(dir, "posters", poster)))
+            return [p.slug, `/work/${p.slug}/posters/${poster}`] as const;
+        }
+        return [p.slug, null] as const;
       } catch {
         return [p.slug, null] as const;
       }
