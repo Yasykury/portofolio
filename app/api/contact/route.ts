@@ -12,9 +12,42 @@ type ContactPayload = {
   message?: string;
   /** Honeypot — real users never fill this. */
   website?: string;
+  /** Cloudflare Turnstile token (when configured). */
+  "cf-turnstile-response"?: string;
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Cloudflare Turnstile verification. No-op (returns true) unless
+// TURNSTILE_SECRET_KEY is configured, so the form keeps working until the
+// key is set in the environment.
+async function verifyTurnstile(
+  token: string | undefined,
+  ip: string | null,
+): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) return true; // not configured → skip
+  if (!token) return false;
+
+  try {
+    const res = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          secret,
+          response: token,
+          ...(ip ? { remoteip: ip } : {}),
+        }),
+      },
+    );
+    const data = (await res.json()) as { success?: boolean };
+    return data.success === true;
+  } catch {
+    return false;
+  }
+}
 
 function validate(body: ContactPayload): string | null {
   if (body.website) return "Spam detected.";
@@ -85,6 +118,18 @@ export async function POST(request: Request) {
   const validationError = validate(body);
   if (validationError) {
     return NextResponse.json({ error: validationError }, { status: 422 });
+  }
+
+  // Bot protection (Cloudflare Turnstile). Skipped automatically when no
+  // secret is configured.
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? null;
+  const human = await verifyTurnstile(body["cf-turnstile-response"], ip);
+  if (!human) {
+    return NextResponse.json(
+      { error: "Verification failed. Please try again." },
+      { status: 403 },
+    );
   }
 
   const submission = {

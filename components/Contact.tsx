@@ -1,17 +1,73 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import Script from "next/script";
 import { site } from "@/lib/site";
 import { Reveal } from "@/components/ui/Reveal";
 import { ArrowRight, IconCheck } from "@/components/ui/icons";
 
 type Status = "idle" | "loading" | "success" | "error";
 
+// Cloudflare Turnstile (invisible bot protection). Only activates when the
+// public site key is set; otherwise the form behaves exactly as before. Set
+// the matching secret in TURNSTILE_SECRET_KEY (server) to enforce it.
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+type TurnstileApi = {
+  render: (
+    el: HTMLElement,
+    opts: {
+      sitekey: string;
+      theme?: "auto" | "light" | "dark";
+      callback?: (token: string) => void;
+      "expired-callback"?: () => void;
+      "error-callback"?: () => void;
+    },
+  ) => string;
+  reset: (id?: string) => void;
+  remove: (id?: string) => void;
+};
+
+declare global {
+  interface Window {
+    turnstile?: TurnstileApi;
+  }
+}
+
 const budgets = ["< $5k", "$5k – $15k", "$15k – $40k", "$40k+"];
 
 export function Contact() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string>("");
+  const [token, setToken] = useState("");
+  const [tsReady, setTsReady] = useState(false);
+  const widgetEl = useRef<HTMLDivElement>(null);
+  const widgetId = useRef<string | null>(null);
+
+  const showForm = status !== "success";
+
+  // Render Turnstile once the script is ready and the form is on screen (it
+  // unmounts on the success panel, then remounts via "Send another message").
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY || !tsReady || !showForm) return;
+    const el = widgetEl.current;
+    const ts = window.turnstile;
+    if (!el || !ts || widgetId.current) return;
+    widgetId.current = ts.render(el, {
+      sitekey: TURNSTILE_SITE_KEY,
+      theme: "dark",
+      callback: setToken,
+      "expired-callback": () => setToken(""),
+      "error-callback": () => setToken(""),
+    });
+    return () => {
+      if (widgetId.current && window.turnstile) {
+        window.turnstile.remove(widgetId.current);
+        widgetId.current = null;
+        setToken("");
+      }
+    };
+  }, [tsReady, showForm]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -21,7 +77,10 @@ export function Contact() {
     setError("");
 
     const form = event.currentTarget;
-    const data = Object.fromEntries(new FormData(form).entries());
+    const data = Object.fromEntries(
+      new FormData(form).entries(),
+    ) as Record<string, string>;
+    if (TURNSTILE_SITE_KEY) data["cf-turnstile-response"] = token;
 
     try {
       const res = await fetch("/api/contact", {
@@ -41,11 +100,21 @@ export function Contact() {
     } catch (err) {
       setStatus("error");
       setError(err instanceof Error ? err.message : "Something went wrong.");
+      // Let the visitor get a fresh challenge for the retry.
+      if (widgetId.current) window.turnstile?.reset(widgetId.current);
+      setToken("");
     }
   }
 
   return (
     <section id="contact" className="scroll-mt-24 py-20 lg:py-28">
+      {TURNSTILE_SITE_KEY && (
+        <Script
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+          strategy="afterInteractive"
+          onLoad={() => setTsReady(true)}
+        />
+      )}
       <div className="shell container-px">
         <div className="overflow-hidden rounded-[2rem] border border-line bg-gradient-to-br from-surface to-bg text-ink shadow-lift">
           <div className="bg-noise relative grid gap-12 p-8 sm:p-12 lg:grid-cols-12 lg:gap-16 lg:p-16">
@@ -176,6 +245,11 @@ export function Contact() {
                       className="w-full resize-none rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-ink placeholder:text-white/35 transition-colors duration-200 focus:border-warm focus:outline-none focus:ring-2 focus:ring-warm/40"
                     />
                   </div>
+
+                  {/* Cloudflare Turnstile mounts here when configured */}
+                  {TURNSTILE_SITE_KEY && (
+                    <div ref={widgetEl} className="min-h-[65px]" />
+                  )}
 
                   {status === "error" && (
                     <p
