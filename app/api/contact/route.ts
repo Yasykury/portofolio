@@ -63,6 +63,15 @@ function validate(body: ContactPayload): string | null {
   return null;
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 async function sendEmail(submission: {
   name: string;
   email: string;
@@ -89,12 +98,12 @@ async function sendEmail(submission: {
       subject: `New inquiry from ${submission.name}`,
       html: `
         <h2>New portfolio inquiry</h2>
-        <p><strong>Name:</strong> ${submission.name}</p>
-        <p><strong>Email:</strong> ${submission.email}</p>
-        <p><strong>Company / Project:</strong> ${submission.company ?? "—"}</p>
-        <p><strong>Budget:</strong> ${submission.budget ?? "—"}</p>
+        <p><strong>Name:</strong> ${escapeHtml(submission.name)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(submission.email)}</p>
+        <p><strong>Company / Project:</strong> ${submission.company ? escapeHtml(submission.company) : "—"}</p>
+        <p><strong>Budget:</strong> ${submission.budget ? escapeHtml(submission.budget) : "—"}</p>
         <p><strong>Message:</strong></p>
-        <p>${submission.message.replace(/\n/g, "<br/>")}</p>
+        <p>${escapeHtml(submission.message).replace(/\n/g, "<br/>")}</p>
       `,
     }),
   });

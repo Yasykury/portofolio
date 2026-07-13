@@ -177,10 +177,13 @@ function AutoVideo({
   onReady: (ratio: number) => void;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
+  const onReadyRef = useRef(onReady);
+  onReadyRef.current = onReady;
+
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
-    if (v.videoWidth) onReady(v.videoWidth / v.videoHeight);
+    if (v.videoWidth) onReadyRef.current(v.videoWidth / v.videoHeight);
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) v.play().catch(() => {});
