@@ -37,14 +37,14 @@ export function RotatingWord({
       <span className="invisible col-start-1 row-start-1" aria-hidden>
         {words.reduce((a, b) => (a.length >= b.length ? a : b))}
       </span>
-      <AnimatePresence mode="popLayout" initial={false}>
+      <AnimatePresence mode="wait" initial={false}>
         <motion.span
           key={i}
           className="col-start-1 row-start-1"
           initial={{ y: "100%", opacity: 0 }}
           animate={{ y: "0%", opacity: 1 }}
           exit={{ y: "-100%", opacity: 0 }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         >
           {words[i]}
         </motion.span>
