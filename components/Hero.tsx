@@ -69,7 +69,7 @@ export function Hero() {
 
       {/* Hero copy */}
       <div className="shell container-px relative z-20 flex flex-1 flex-col justify-center py-16 lg:pr-[42%]">
-        <FadeIn as="div" playOnMount delay={0.05} y={16}>
+        <FadeIn as="div" playOnMount delay={0.02} duration={0.5} y={12}>
           <p className="mono-label flex items-center gap-2.5">
             <span className="h-1.5 w-1.5 rounded-full bg-warm animate-blink" />
             Showreel 00:00 — {site.availability}
@@ -77,10 +77,10 @@ export function Hero() {
         </FadeIn>
 
         <h1 className="mt-6 font-display text-[14vw] font-extrabold leading-[0.95] tracking-tight sm:text-[12vw] md:text-[9vw] lg:text-[6.5rem] xl:text-[7.5rem]">
-          <FadeIn as="div" playOnMount delay={0.12} y={40}>
+          <FadeIn as="div" playOnMount delay={0.06} duration={0.5} y={24}>
             <span className="block">I make</span>
           </FadeIn>
-          <FadeIn as="div" playOnMount delay={0.22} y={40}>
+          <FadeIn as="div" playOnMount delay={0.12} duration={0.5} y={24}>
             <span className="block">
               brands{" "}
               <RotatingWord
@@ -91,7 +91,7 @@ export function Hero() {
           </FadeIn>
         </h1>
 
-        <FadeIn as="div" playOnMount delay={0.36} y={20}>
+        <FadeIn as="div" playOnMount delay={0.2} duration={0.5} y={14}>
           <p className="mt-7 max-w-xl text-lg leading-relaxed text-ink-soft">
             {site.name} — {site.role.toLowerCase()} crafting video, motion
             graphics &amp; brand design. Seven years turning ideas into motion
@@ -99,7 +99,7 @@ export function Hero() {
           </p>
         </FadeIn>
 
-        <FadeIn as="div" playOnMount delay={0.48} y={20}>
+        <FadeIn as="div" playOnMount delay={0.28} duration={0.5} y={14}>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
             <ContactButton />
             <GhostButton label="See the work" href="#work" />
