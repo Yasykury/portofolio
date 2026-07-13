@@ -19,7 +19,7 @@ export function Hero() {
       {/* Animated avatar — right side on all screens. Black-bg video blends
           into the dark hero; masked to fade out on the left so the copy reads. */}
       <div
-        className="absolute inset-y-0 right-0 z-0 w-[86%] overflow-hidden sm:w-[64%] lg:w-[44%] lg:max-w-[580px] min-[1344px]:right-[calc((100vw-84rem)/2)] [mask-image:linear-gradient(to_right,transparent,#000_16%)] [-webkit-mask-image:linear-gradient(to_right,transparent,#000_16%)] lg:[mask-image:linear-gradient(to_right,transparent,#000_38%)] lg:[-webkit-mask-image:linear-gradient(to_right,transparent,#000_38%)]"
+        className="absolute inset-y-0 right-0 z-0 w-[86%] overflow-hidden sm:w-[64%] lg:w-[44%] [mask-image:linear-gradient(to_right,transparent,#000_16%)] [-webkit-mask-image:linear-gradient(to_right,transparent,#000_16%)] lg:[mask-image:linear-gradient(to_right,transparent,#000_38%)] lg:[-webkit-mask-image:linear-gradient(to_right,transparent,#000_38%)]"
       >
         <video
           className="h-full w-full object-cover object-[28%_top] lg:object-[center_top]"
