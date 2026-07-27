@@ -55,6 +55,8 @@ export type Project = {
   tags: string[];
   /** Tailwind gradient classes used as the card cover. */
   cover: string;
+  /** Optional YouTube video IDs to embed on the project detail page. */
+  youtubeVideos?: string[];
 };
 
 export const projects: Project[] = [
@@ -127,6 +129,13 @@ export const projects: Project[] = [
       "End-to-end production and editing for a high-traffic channel — narrative-driven edits with After Effects and Premiere Pro to boost viewer retention.",
     tags: ["Video Editing", "After Effects", "Storytelling"],
     cover: "from-fuchsia-500 via-purple-500 to-indigo-600",
+    youtubeVideos: [
+      "tPdEEwgtjlU",
+      "WDqT94MTK1o",
+      "CPXArAUacMU",
+      "ntuhMvucFHk",
+      "8U0dwM_8zGM",
+    ],
   },
 ];
 

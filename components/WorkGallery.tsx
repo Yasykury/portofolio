@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from "react";
 
 export type MediaItem = {
   src: string;
-  type: "image" | "video";
+  type: "image" | "video" | "youtube";
   poster?: string;
+  youtubeId?: string;
 };
 
 export function WorkGallery({ media }: { media: MediaItem[] }) {
@@ -39,7 +40,7 @@ export function WorkGallery({ media }: { media: MediaItem[] }) {
     <>
       <div className="flex flex-wrap items-start gap-4">
         {media.map((m, i) => {
-          const ar = ratios[i] ?? 1.5; // default until measured
+          const ar = ratios[i] ?? (m.type === "youtube" ? 16 / 9 : 1.5);
           return (
             <button
               key={m.src}
@@ -49,7 +50,17 @@ export function WorkGallery({ media }: { media: MediaItem[] }) {
               style={{ flexGrow: ar, flexBasis: `${ar * 14}rem` }}
               className="group relative block cursor-pointer overflow-hidden rounded-xl border border-line bg-surface max-sm:!grow-0 max-sm:!basis-full"
             >
-              {m.type === "video" ? (
+              {m.type === "youtube" ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://img.youtube.com/vi/${m.youtubeId}/hqdefault.jpg`}
+                    alt=""
+                    loading="lazy"
+                    className="block h-auto w-full transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
+                </>
+              ) : m.type === "video" ? (
                 <AutoVideo
                   src={m.src}
                   poster={m.poster}
@@ -78,13 +89,23 @@ export function WorkGallery({ media }: { media: MediaItem[] }) {
               {/* hover overlay */}
               <span className="pointer-events-none absolute inset-0 flex items-end justify-between bg-gradient-to-t from-black/55 via-transparent to-transparent p-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                 <span className="inline-flex items-center gap-1.5 font-mono text-[0.65rem] uppercase tracking-[0.16em] text-white">
-                  {m.type === "video" ? <PlayIcon /> : <ExpandIcon />}
-                  {m.type === "video" ? "Play" : "View"}
+                  {m.type === "youtube" ? (
+                    <PlayIcon />
+                  ) : m.type === "video" ? (
+                    <PlayIcon />
+                  ) : (
+                    <ExpandIcon />
+                  )}
+                  {m.type === "youtube"
+                    ? "Watch on YouTube"
+                    : m.type === "video"
+                      ? "Play"
+                      : "View"}
                 </span>
               </span>
-              {m.type === "video" && (
+              {(m.type === "video" || m.type === "youtube") && (
                 <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-black/55 px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-white backdrop-blur">
-                  Video
+                  {m.type === "youtube" ? "YouTube" : "Video"}
                 </span>
               )}
             </button>
@@ -137,7 +158,18 @@ export function WorkGallery({ media }: { media: MediaItem[] }) {
             className="max-h-[88vh] max-w-[92vw]"
             onClick={(e) => e.stopPropagation()}
           >
-            {media[active].type === "video" ? (
+            {media[active].type === "youtube" ? (
+              <div className="aspect-video w-[90vw] max-w-5xl">
+                <iframe
+                  key={media[active].youtubeId}
+                  src={`https://www.youtube.com/embed/${media[active].youtubeId}?autoplay=1&rel=0`}
+                  title="YouTube video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="h-full w-full rounded-xl"
+                />
+              </div>
+            ) : media[active].type === "video" ? (
               <video
                 key={media[active].src}
                 src={media[active].src}

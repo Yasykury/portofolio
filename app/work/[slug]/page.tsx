@@ -5,7 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { projects, site } from "@/lib/site";
 import { Footer } from "@/components/Footer";
-import { WorkGallery } from "@/components/WorkGallery";
+import { WorkGallery, type MediaItem } from "@/components/WorkGallery";
 import { ContactButton } from "@/components/ui/buttons";
 import { ArrowRight } from "@/components/ui/icons";
 
@@ -23,8 +23,6 @@ export async function generateMetadata({
   if (!project) return {};
   return { title: project.title, description: project.blurb };
 }
-
-type MediaItem = { src: string; type: "image" | "video"; poster?: string };
 
 // Auto-collect everything dropped into public/work/<slug>/ at build time —
 // no code edit needed to add work samples.
@@ -62,7 +60,16 @@ export default async function WorkDetail({
   const project = projects.find((p) => p.slug === slug);
   if (!project) notFound();
 
-  const media = await getMedia(slug);
+  const localMedia = await getMedia(slug);
+
+  // Merge local files with YouTube embeds (if any)
+  const youtubeMedia: MediaItem[] = (project.youtubeVideos ?? []).map((id) => ({
+    src: `youtube-${id}`,
+    type: "youtube",
+    youtubeId: id,
+  }));
+  const media = [...localMedia, ...youtubeMedia];
+
   const index = projects.findIndex((p) => p.slug === slug);
   const next = projects[(index + 1) % projects.length];
 
