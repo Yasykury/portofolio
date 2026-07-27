@@ -11,6 +11,7 @@ import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 
 // First image in each project's media folder → used as the Work hover thumbnail.
+// Falls back to YouTube thumbnail if no local media but youtubeVideos is set.
 async function getThumbs(): Promise<Record<string, string | null>> {
   const entries = await Promise.all(
     projects.map(async (p) => {
@@ -26,10 +27,14 @@ async function getThumbs(): Promise<Record<string, string | null>> {
           if (existsSync(path.join(dir, "posters", poster)))
             return [p.slug, `/work/${p.slug}/posters/${poster}`] as const;
         }
-        return [p.slug, null] as const;
       } catch {
-        return [p.slug, null] as const;
+        // no local media folder — fall through
       }
+      // Fallback: use YouTube thumbnail if available
+      if (p.youtubeVideos && p.youtubeVideos.length > 0) {
+        return [p.slug, `https://img.youtube.com/vi/${p.youtubeVideos[0]}/hqdefault.jpg`] as const;
+      }
+      return [p.slug, null] as const;
     }),
   );
   return Object.fromEntries(entries);
