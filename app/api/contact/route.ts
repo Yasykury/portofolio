@@ -4,6 +4,10 @@ import path from "node:path";
 
 export const runtime = "nodejs";
 
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
 type ContactPayload = {
   name?: string;
   email?: string;
@@ -16,11 +20,54 @@ type ContactPayload = {
   "cf-turnstile-response"?: string;
 };
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// ---------------------------------------------------------------------------
+// [SEC-10] Stricter email regex — rejects addresses without a valid TLD.
+// Allows all RFC 5321 local-part characters while requiring a proper domain.
+// ---------------------------------------------------------------------------
+const EMAIL_RE =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
 
+// ---------------------------------------------------------------------------
+// [SEC-03] Field length limits (server-side).
+// ---------------------------------------------------------------------------
+const MAX_LENGTHS = {
+  name: 100,
+  email: 254, // RFC 5321 maximum
+  company: 200,
+  budget: 50,
+  message: 5_000,
+} as const;
+
+// ---------------------------------------------------------------------------
+// [SEC-01] In-memory rate limiter — 5 submissions per IP per hour.
+//
+// Note: each serverless function instance has its own memory, so this limit
+// applies per-instance rather than globally. For a portfolio contact form
+// (low traffic, already protected by Turnstile) this is sufficient.
+// For stricter enforcement consider Upstash Redis + @upstash/ratelimit.
+// ---------------------------------------------------------------------------
+const ipRateMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1_000; // 1 hour
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const record = ipRateMap.get(ip);
+
+  if (!record || now > record.resetAt) {
+    ipRateMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+  if (record.count >= RATE_LIMIT_MAX) return false;
+  record.count++;
+  return true;
+}
+
+// ---------------------------------------------------------------------------
 // Cloudflare Turnstile verification. No-op (returns true) unless
 // TURNSTILE_SECRET_KEY is configured, so the form keeps working until the
 // key is set in the environment.
+// ---------------------------------------------------------------------------
 async function verifyTurnstile(
   token: string | undefined,
   ip: string | null,
@@ -49,20 +96,39 @@ async function verifyTurnstile(
   }
 }
 
+// ---------------------------------------------------------------------------
+// Validation — checks honeypot, required fields, formats, and length limits.
+// ---------------------------------------------------------------------------
 function validate(body: ContactPayload): string | null {
   if (body.website) return "Spam detected.";
-  if (!body.name || body.name.trim().length < 2) {
+
+  if (!body.name || body.name.trim().length < 2)
     return "Please enter your name.";
-  }
-  if (!body.email || !EMAIL_RE.test(body.email)) {
+  if (body.name.length > MAX_LENGTHS.name)
+    return `Name must be at most ${MAX_LENGTHS.name} characters.`;
+
+  if (!body.email || !EMAIL_RE.test(body.email))
     return "Please enter a valid email address.";
-  }
-  if (!body.message || body.message.trim().length < 10) {
+  if (body.email.length > MAX_LENGTHS.email)
+    return "Email address is too long.";
+
+  if (body.company && body.company.length > MAX_LENGTHS.company)
+    return `Company / project name must be at most ${MAX_LENGTHS.company} characters.`;
+
+  if (body.budget && body.budget.length > MAX_LENGTHS.budget)
+    return "Invalid budget selection.";
+
+  if (!body.message || body.message.trim().length < 10)
     return "Please add a few more details about your project.";
-  }
+  if (body.message.length > MAX_LENGTHS.message)
+    return `Message must be at most ${MAX_LENGTHS.message.toLocaleString()} characters.`;
+
   return null;
 }
 
+// ---------------------------------------------------------------------------
+// HTML escaping — prevents stored XSS in email body.
+// ---------------------------------------------------------------------------
 function escapeHtml(str: string): string {
   return str
     .replace(/&/g, "&amp;")
@@ -72,6 +138,9 @@ function escapeHtml(str: string): string {
     .replace(/'/g, "&#039;");
 }
 
+// ---------------------------------------------------------------------------
+// Email sender (Resend).
+// ---------------------------------------------------------------------------
 async function sendEmail(submission: {
   name: string;
   email: string;
@@ -115,9 +184,18 @@ async function sendEmail(submission: {
   return true;
 }
 
+// ---------------------------------------------------------------------------
+// Route handler
+// ---------------------------------------------------------------------------
 export async function POST(request: Request) {
-  let body: ContactPayload;
+  // [SEC-03] Reject oversized payloads before parsing JSON.
+  // 64 KB is far more than any legitimate contact submission needs.
+  const contentLength = Number(request.headers.get("content-length") ?? 0);
+  if (contentLength > 65_536) {
+    return NextResponse.json({ error: "Payload too large." }, { status: 413 });
+  }
 
+  let body: ContactPayload;
   try {
     body = await request.json();
   } catch {
@@ -129,10 +207,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: validationError }, { status: 422 });
   }
 
+  // [SEC-01] Rate limiting — checked after validation to avoid wasting a
+  // slot on obviously invalid payloads.
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a while before trying again." },
+      { status: 429 },
+    );
+  }
+
   // Bot protection (Cloudflare Turnstile). Skipped automatically when no
   // secret is configured.
-  const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? null;
   const human = await verifyTurnstile(body["cf-turnstile-response"], ip);
   if (!human) {
     return NextResponse.json(
