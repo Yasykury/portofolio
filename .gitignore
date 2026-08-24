@@ -29,3 +29,6 @@ next-env.d.ts.bak
 
 # runtime data (contact submissions written by the API route)
 /data/contact-submissions.json
+
+.vercel
+.env*
