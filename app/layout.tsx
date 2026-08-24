@@ -5,6 +5,7 @@ import "@fontsource-variable/bricolage-grotesque";
 import "@fontsource-variable/space-grotesk";
 import "@fontsource-variable/jetbrains-mono";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 // Set NEXT_PUBLIC_SITE_URL to your real domain in Vercel once you have it.
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yasykury.com";
@@ -68,6 +69,7 @@ export default function RootLayout({
           Skip to content
         </a>
         {children}
+        <Analytics />
       </body>
     </html>
   );
