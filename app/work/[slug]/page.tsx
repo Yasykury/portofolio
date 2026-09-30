@@ -26,7 +26,10 @@ export async function generateMetadata({
 
 // Auto-collect everything dropped into public/work/<slug>/ at build time —
 // no code edit needed to add work samples.
-async function getMedia(slug: string): Promise<MediaItem[]> {
+async function getMedia(
+  slug: string,
+  externalLinks?: Record<string, string>,
+): Promise<MediaItem[]> {
   try {
     const dir = path.join(process.cwd(), "public", "work", slug);
     const files = await fs.readdir(dir);
@@ -44,6 +47,8 @@ async function getMedia(slug: string): Promise<MediaItem[]> {
           if (existsSync(path.join(dir, "posters", poster)))
             item.poster = `/work/${slug}/posters/${poster}`;
         }
+        // Attach external link if this filename has one configured
+        if (externalLinks?.[f]) item.linkUrl = externalLinks[f];
         return item;
       });
   } catch {
@@ -60,7 +65,7 @@ export default async function WorkDetail({
   const project = projects.find((p) => p.slug === slug);
   if (!project) notFound();
 
-  const localMedia = await getMedia(slug);
+  const localMedia = await getMedia(slug, project.externalLinks);
 
   // Merge local files with YouTube embeds (if any)
   const youtubeMedia: MediaItem[] = (project.youtubeVideos ?? []).map((id) => ({

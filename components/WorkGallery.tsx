@@ -7,6 +7,8 @@ export type MediaItem = {
   type: "image" | "video" | "youtube";
   poster?: string;
   youtubeId?: string;
+  /** When set, a "Visit Website" button appears on hover over this item. */
+  linkUrl?: string;
 };
 
 export function WorkGallery({ media }: { media: MediaItem[] }) {
@@ -102,6 +104,19 @@ export function WorkGallery({ media }: { media: MediaItem[] }) {
                       ? "Play"
                       : "View"}
                 </span>
+                {/* Visit Website button — only shown when linkUrl is set */}
+                {m.linkUrl && (
+                  <a
+                    href={m.linkUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-cyan-500 px-3 py-1.5 font-mono text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-white shadow-lg transition-colors duration-200 hover:bg-cyan-400"
+                  >
+                    <ExternalLinkIcon />
+                    Visit Website
+                  </a>
+                )}
               </span>
               {(m.type === "video" || m.type === "youtube") && (
                 <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-black/55 px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-white backdrop-blur">
@@ -269,6 +284,15 @@ function ChevronIcon({ dir }: { dir: "left" | "right" }) {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ transform: dir === "left" ? "rotate(180deg)" : undefined }}>
       <path d="m9 6 6 6-6 6" />
+    </svg>
+  );
+}
+function ExternalLinkIcon() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+      <polyline points="15 3 21 3 21 9" />
+      <line x1="10" y1="14" x2="21" y2="3" />
     </svg>
   );
 }

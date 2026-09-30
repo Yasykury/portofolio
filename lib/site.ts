@@ -57,6 +57,9 @@ export type Project = {
   cover: string;
   /** Optional YouTube video IDs to embed on the project detail page. */
   youtubeVideos?: string[];
+  /** Optional map of filename → external URL. Adds a "Visit Website" button
+   *  overlay on that specific media item in the gallery. */
+  externalLinks?: Record<string, string>;
 };
 
 export const projects: Project[] = [
@@ -69,6 +72,9 @@ export const projects: Project[] = [
       "Producing video and graphic assets for company branding and community marketing — plus contributing to the Polestar community website and podcast studio setup.",
     tags: ["Video", "Motion Graphics", "Web"],
     cover: "from-sky-500 via-blue-500 to-indigo-600",
+    externalLinks: {
+      "04-polestar-website.png": "https://www.polestarnusantara.com",
+    },
   },
   {
     slug: "grw",
