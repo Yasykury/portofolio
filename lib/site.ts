@@ -62,7 +62,7 @@ export type Project = {
 export const projects: Project[] = [
   {
     slug: "polestar",
-    title: "PT Dupoin Futures Indonesia (Polestar Indonesia)",
+    title: "PT Polestar Inovasi Nusantara",
     category: "Multimedia · Branding",
     year: "2026",
     blurb:
